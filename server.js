@@ -24,12 +24,7 @@ app.listen(PORT, () => {
 
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
-  app.use((req, res, next) => {
-    res.set('Cache-Control', 'public, max-age=31557600');
-    express.static(`${__dirname}/client/build`);
-    next();
-  });
-
+  app.use(express.static(`${__dirname}/client/build`));
   // Handle React routing, return all requests to React app
   app.get('*', (req, res) => {
     res.render(`${__dirname}/client/public/index.html`);
