@@ -1,14 +1,15 @@
-const express = require("express");
-const path = require('path');
+const express = require('express');
+const compression = require('compression');
 require('dotenv').config();
 
-const { server } = require("./schema");
+const { server } = require('./schema');
 
 const app = express();
+app.use(compression());
 
 if (!process.env.ENGINE_API_KEY) {
   throw new Error(
-    "Please provide an API key for Apollo Engine in the environment variable ENGINE_API_KEY."
+    'Please provide an API key for Apollo Engine in the environment variable ENGINE_API_KEY.'
   );
 }
 
@@ -23,9 +24,14 @@ app.listen(PORT, () => {
 
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
-  app.use(express.static(path.join(__dirname, '/client/build')));
+  app.use((req, res, next) => {
+    res.set('Cache-Control', 'public, max-age=31557600');
+    express.static(`${__dirname}/client/build`);
+    next();
+  });
+
   // Handle React routing, return all requests to React app
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '/client/public/', 'index.html'));
+    res.render(`${__dirname}/client/public/index.html`);
   });
 }

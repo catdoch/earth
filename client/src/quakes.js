@@ -3,6 +3,7 @@ import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 
 import App from './App';
+import SelectComponent from './utils/select-component';
 import './quakes.css';
 
 const GET_QUAKE = gql`
@@ -46,13 +47,13 @@ class Quakes extends Component {
                                 <h3 className="loading-sign">Loading...</h3>
                             ) : (
                                 <div>
-                                    <select name="magnitude" className="mag-changer" onChange={(e) => this.updateValue(e, refetch)} value={mag}>
-                                        <option value="3">Magnitude > 3</option>
-                                        <option value="4">Magnitude > 4</option>
-                                        <option value="5">Magnitude > 5</option>
-                                        <option value="6">Magnitude > 6</option>
-                                        <option value="7">Magnitude > 7</option>
-                                    </select>
+                                    <SelectComponent name="magnitude" className="mag-changer" onChange={(e) => this.updateValue(e, refetch)} value={mag}>
+                                        <option label="Magnitude > 3" value="3" />
+                                        <option label="Magnitude > 4" value="4" />
+                                        <option label="Magnitude > 5" value="5" />
+                                        <option label="Magnitude > 6" value="6" />
+                                        <option label="Magnitude > 7" value="7" />
+                                    </SelectComponent>
                                     <App data={data} mag={mag} />
                                 </div>
                             )}

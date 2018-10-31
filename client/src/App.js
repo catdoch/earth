@@ -14,12 +14,12 @@ class App extends Component {
             map: '',
             icon: L.icon({
                 iconUrl: marker,
-                shadowUrl: shadow
+                shadowUrl: shadow,
             }),
             data: this.props.data,
             mag: this.props.mag,
-            markersLayers: new L.LayerGroup()
-        }
+            markersLayers: new L.LayerGroup(),
+        };
         this.renderMap = this.renderMap.bind(this);
     }
 
@@ -30,17 +30,24 @@ class App extends Component {
 
     componentWillReceiveProps(newProps) {
         const { map, markersLayers } = this.state;
+        const { data } = newProps;
 
-        this.setState({
-            data: newProps.data,
-            markersLayers: markersLayers.clearLayers()
-        }, () => {
-            newProps.data.getQuakes.map(earth => this.getDetails(earth, map))
-        });
+        this.setState(
+            {
+                data,
+                markersLayers: markersLayers.clearLayers(),
+            },
+            () => {
+                data.getQuakes.map((earth) => this.getDetails(earth, map));
+            }
+        );
     }
 
     getMap(map) {
-        L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png').addTo(map);
+        L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png', {
+            useCache: true,
+            crossOrigin: true,
+        }).addTo(map);
         map.setView([0, 0], 0);
         map.setZoom(2);
     }
@@ -50,30 +57,38 @@ class App extends Component {
     }
 
     addMarkers(lat, lng, place, mag, map) {
-        const marker = L.marker([lat, lng], { icon: this.state.icon })
-            .bindTooltip(`location: ${place}, mag: ${mag}`, { permanent: true, direction: 'top' });
+        const marker = L.marker([lat, lng], { icon: this.state.icon }).bindTooltip(
+            `location: ${place}, mag: ${mag}`,
+            { permanent: true, direction: 'top' }
+        );
         this.setState({ markersLayers: this.state.markersLayers.addLayer(marker) });
     }
 
     renderMap(map) {
         const { data } = this.state;
-        this.setState({
-            map
-        }, () => {
-            this.getMap(this.state.map);
-            data.getQuakes.map(earth => this.getDetails(earth, this.state.map));
-            this.state.markersLayers.addTo(map);
-        });
+        this.setState(
+            {
+                map,
+            },
+            () => {
+                this.getMap(this.state.map);
+                data.getQuakes.map((earth) => this.getDetails(earth, this.state.map));
+                this.state.markersLayers.addTo(map);
+            }
+        );
     }
 
     render() {
-        const { data: {getQuakes}, mag } = this.state;
+        const {
+            data: { getQuakes },
+            mag,
+        } = this.state;
         return (
             <div className="map-wrapper">
-                { getQuakes.length === 0 && <h2>No quakes above {mag}!</h2> }
+                {getQuakes.length === 0 && <h2>No quakes above {mag}!</h2>}
                 <div id="map" />
             </div>
-        )
+        );
     }
 }
 
